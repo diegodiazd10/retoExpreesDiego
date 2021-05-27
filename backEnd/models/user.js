@@ -1,21 +1,22 @@
-// importamos los modulos de Mongo, jwt y moment
+// importamos modulos
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
 
-// Creamos el esquema de user (Coleccion)
+// creamos el esquema de user (coleccion)
 const userSchema = new mongoose.Schema({
   name: String,
   email: String,
   password: String,
-  date: { type: Date, default: Date.now },
+  date: { type: Date,
+  default: Date.now,}
 });
 
-// Generamos jwt para el usuario
-userSchema.methods.generateJWT = () => {
+// generamos jwt para el usuario
+userSchema.methods.generateJWT = function(){
   return jwt.sign(
     {
-      _id: this.discriminate,
+      _id: this._id,
       name: this.name,
       iat: moment().unix(),
     },
@@ -23,7 +24,8 @@ userSchema.methods.generateJWT = () => {
   );
 };
 
+// coleccion user en mongo
 const User = mongoose.model("user", userSchema);
 
-// Exportar Modulo
+// exportar modulo
 module.exports = User;
