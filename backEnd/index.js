@@ -1,36 +1,31 @@
 // Importamos los modulos de express para crear el servidor y mongoose paraMongo
 const express = require("express");
-const mongoose = require("mongoose");
+const cors = require("cors");
+const {dbConnection} = require("./db/db");
+require("dotenv").config();
+
 
 // instanciamos la ruta del controlador(routes)
 const User = require("./routes/user");
 const Auth = require("./routes/auth");
 const Board = require("./routes/board");
+const Role = require("./routes/role")
 
 // Creamos la varible principal que ejecuta nuestra app(Instanciando express)
 const app = express();
 
 // Usos que tiene mi appapp.use(express.json())
 app.use(express.json());
+app.use(cors());
 app.use("/api/user/", User);
 app.use("/api/auth/", Auth);
 app.use("/api/board/", Board);
+app.use("/api/role/", Role)
 
-// Creamos la variable del puerto sea hosting o local
-const port = process.env.PORT || 3001;
 
 // escuchando el puerto y desplegando el servidor
-app.listen(port, () =>
-  console.log("Servidor ejecutando en el puerto: " + port)
+app.listen(process.env.PORT, () =>
+  console.log("Servidor ejecutando en el puerto: " + process.env.PORT)
 ); // http://localhost:3001/api/user/registerUser
 
-// conexion con MongoDB
-mongoose
-  .connect("mongodb://127.0.0.1:27017/retoexpressdiego", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
-    useCreateIndex: true,
-  })
-  .then(() => console.log("Conexion con MongoDB: ON"))
-  .catch((error) => console.log("Error de conexion: ", error));
+dbConnection();

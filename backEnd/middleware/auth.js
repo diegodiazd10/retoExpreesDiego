@@ -1,28 +1,19 @@
-// importamos modulo jsonwebtoken
 const jwt = require("jsonwebtoken");
 
-// validamos la autenticacion
-const auth = (req, res, next) => {
-  // revisamos el header en su parte de autorizaciones
+const auth = async (req, res, next) => {
   let jwtToken = req.header("Authorization");
-  //validamos si existe el jwt
-  if (!jwtToken)
-    return res.status(401).send("Autorizacion rechazada: No hay un Token");
-  // si existe el jwt vamos a separar el payload
-  jwtToken = jwtToken.split(" ")[1];
+  if (!jwtToken) return res.status(401).send("Authorization denied: No Token");
 
-  if (!jwtToken)
-    return res.status(401).send("Autorizacion rechazada: No hay un Token");
-  // validamos que sea un token nuestro
+  jwtToken = jwtToken.split(" ")[1];
+  if (!jwtToken) return res.status(401).send("Authorization denied: No Token");
+
   try {
-    //revisamos apalabra secreta del payload
-    const payload = jwt.verify(jwtToken, "secretJWT");
+    const payload = await jwt.verify(jwtToken, process.env.SECRET_KEY_JWT);
     req.user = payload;
     next();
-  } catch (error) {
-    return res.status(401).send("Autorizacion rechazada: Token no valido");
+  } catch (e) {
+    res.status(401).send("Authorization denied: Invalid Token");
   }
 };
 
-// exportamos modulo
 module.exports = auth;

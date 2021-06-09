@@ -1,59 +1,99 @@
-// importamos modulos
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 const Board = require("../models/board");
-const User = require("../models/user");
 const Auth = require("../middleware/auth");
+const UserAuth = require("../middleware/user");
+const multipart = require("connect-multiparty"); //img
+const mult = multipart(); //img
+const fs = require("fs"); //Img
+const path = require("path"); //Img
+const moment = require("moment"); // Img
+const Upload = require("../middleware/file");
 
-// registar actividad sin imagen
-router.post("/saveTask", Auth, async (req, res) => {
-  // buscamos Usuario de la peticion
-  const user = await User.findById(req.user._id);
-  // Sino se encuentra el usuario
-  if (!user) return res.status(401).send("Usuario no autenticado");
-  // Si el usuario existe procedemos a registrar
+router.post("/saveTaskImg", mult, Upload, Auth, UserAuth, async (req, res) => {
+  if (!req.body.name || !req.body.description)
+    return res.status(401).send("Process failed: Incomplete data");
+  let imageUrl = "";
+  if (req.files !== undefined && req.files.image.type) {
+    const url = req.protocol + "://" + req.get("host") + "/";
+    let serverImg =
+      "./uploads/" + moment().unix() + path.extname(req.files.image.path);
+    fs.createReadStream(req.files.image.path).pipe(
+      fs.createWriteStream(serverImg)
+    );
+    imageUrl =
+      url + "uploads/" + moment().unix() + path.extname(req.files.image.path);
+  }
+
   const board = new Board({
-    userId: user._id,
+    userId: req.user._id,
+    name: req.body.name,
+    description: req.body.description,
+    status: "to-do",
+    imageUrl: imageUrl,
+  });
+
+  const result = await board.save();
+  if (!result)
+    return res.status(401).send("Process failed: Failed to register task");
+  return res.status(200).send({ result });
+});
+
+router.post("/saveTask", Auth, UserAuth, async (req, res) => {
+  if (!req.body.name || !req.body.description)
+    return res.status(401).send("Process failed: Incomplete data");
+
+  const board = new Board({
+    userId: req.user._id,
     name: req.body.name,
     description: req.body.description,
     status: "to-do",
   });
-  //guardamos en mongo DB
+
   const result = await board.save();
+  if (!result)
+    return res.status(401).send("Process failed: Failed to register task");
   return res.status(200).send({ result });
 });
 
-router.get("/listTask", Auth, async (req, res) => {
-  //obtenemos el usuario por id
-  const user = await User.findById(req.user._id);
-  // validamos si el usuario existe
-  if (!user) return res.status(401).send("Usuario no registrado en BD");
-  //si el usuario existe
+router.get("/listTask", Auth, UserAuth, async (req, res) => {
+  const validId = mongoose.Types.ObjectId.isValid(req.user._id);
+  if (!validId) return res.status(401).send("Process failed: Invalid id");
   const board = await Board.find({ userId: req.user._id });
+  if (!board) return res.status(401).send("Process failed: No tasks to delete");
   return res.status(200).send({ board });
 });
 
-router.put("/updateTask", Auth, async (req, res) => {
-  const user = await User.findById(req.user._id);
-  if (!user) return res.status(401).send("Usuario no registrado en BD");
+router.put("/updateTask", Auth, UserAuth, async (req, res) => {
+  if (
+    !req.body._id ||
+    !req.body.name ||
+    !req.body.status ||
+    !req.body.description
+  )
+    return res.status(401).send("Process failed: Incomplete data");
+
+  const validId = mongoose.Types.ObjectId.isValid(req.body._id);
+  if (!validId) return res.status(401).send("Process failed: Invalid id");
+
   const board = await Board.findByIdAndUpdate(req.body._id, {
-    userId: user._id,
+    userId: req.user._id,
     name: req.body.name,
     status: req.body.status,
     description: req.body.description,
   });
-  if (!board) return res.status(401).send("No se pudo Editar esta actividad");
+  if (!board) return res.status(401).send("Process failed: Task not found");
   return res.status(200).send({ board });
 });
 
-router.delete("/:_id", Auth, async (req, res) => {
-  const user = await User.findByIdAndDelete(req.user._id);
-  if (!user) return res.status(401).send("Usuario no registrado en BD");
+router.delete("/deleteTask/:_id", Auth, UserAuth, async (req, res) => {
+  const validId = mongoose.Types.ObjectId.isValid(req.params._id);
+  if (!validId) return res.status(401).send("Process failed: Invalid id");
   const board = await Board.findByIdAndDelete(req.params._id);
-  if (!board) return res.status(401).send("No hay actividad para eliminar");
-  return res.status(200).send("Actividad eliminada");
+  if (!board) return res.status(401).send("Process failed: Task not found");
+  return res.status(200).send("Task deleted");
 });
 
-// eliminar tarea
-
 module.exports = router;
+
