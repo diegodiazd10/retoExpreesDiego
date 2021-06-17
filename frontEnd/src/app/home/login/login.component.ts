@@ -1,15 +1,51 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
+  public loginData: any;
+  public errorMessage: String;
+  constructor(private auth: AuthService, private router: Router) {
+    this.loginData = {};
+    this.errorMessage = '';
   }
 
+  ngOnInit(): void {}
+
+  login() {
+    if (!this.loginData.email || !this.loginData.password) {
+      console.log('Process failed: Incomplete data');
+      this.errorMessage = 'Process failed: Incomplete data';
+      this.loginData = {};
+    } else {
+      this.auth.login(this.loginData).subscribe(
+        (res: any) => {
+          console.log(res);
+          localStorage.setItem('token', res.jwtToken);
+          this.router.navigate(['/listTasks']);
+        },
+        (err) => {
+          console.log(err);
+          this.errorMessage = err.error;
+          this.closeAlert();
+          this.loginData = {};
+        }
+      );
+    }
+  }
+
+  closeAlert() {
+    setTimeout(() => {
+      this.errorMessage = '';
+    }, 3000);
+  }
+
+  closeX() {
+    this.errorMessage = '';
+  }
 }

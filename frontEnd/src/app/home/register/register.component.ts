@@ -32,14 +32,17 @@ export class RegisterComponent implements OnInit {
       
     } else {
       this.auth.registerUser(this.registerData).subscribe(
-        (res) => {
+        (res: any) => {
           console.log(res);
-          this.succesMessage = 'Register User: successfull';
-          this.closeAlert;
+          localStorage.setItem('token', res.jwtToken);
+          this.registerData = {};
+          this.router.navigate(['/saveTask'])
+          /* this.succesMessage = 'Register User: successfull';
+          this.closeAlert; */
         },
         (err) => {
           console.log(err);
-          this.errorMessage = err.error();
+          this.errorMessage = err.error;
           this.closeAlert();
         }
       )
@@ -50,5 +53,9 @@ export class RegisterComponent implements OnInit {
       this.succesMessage = '';
       this.errorMessage = ''
     },3000)
+  }
+
+  closeX() {
+    this.errorMessage = '';
   }
 }

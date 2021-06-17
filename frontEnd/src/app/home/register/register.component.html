@@ -1,22 +1,6 @@
 <div class="form">
   <mat-card class="card">
     <mat-card-title> Register User</mat-card-title>
-    <div class="col-12 col-lg-12" *ngIf="succesMessage">
-      <div class="alert alert-success alert-dissmisible" role="alert">
-        <div class="alert-message">
-          {{ succesMessage }}
-        </div>
-        <button
-          type="button"
-          class="close"
-          (click)="closeAlert()"
-          data-dismiss="alert"
-          aria-label="Close"
-        >
-          X
-        </button>
-      </div>
-    </div>
 
     <div class="col-12 col-lg-12" *ngIf="errorMessage">
       <div class="alert alert-danger alert-dissmisible" role="alert">
@@ -26,7 +10,7 @@
         <button
           type="button"
           class="close"
-          (click)="closeAlert()"
+          (click)="closeX()"
           data-dismiss="alert"
           aria-label="Close"
         >
