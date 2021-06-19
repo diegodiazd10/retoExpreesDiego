@@ -18,7 +18,15 @@ export class AuthService {
     return this.http.post(this.env + 'auth/login', user);
   }
 
-  saveTask(user: any) {
-    return this.http.post(this.env + 'board/saveTask', user);
+  loggedIn() {
+    return !!localStorage.getItem('token')
   }
+
+  getToken() {
+     return localStorage.getItem('token')
+  }
+
+  /* saveTask(user: any) {
+    return this.http.post(this.env + 'board/saveTask', user);
+  } */
 }
