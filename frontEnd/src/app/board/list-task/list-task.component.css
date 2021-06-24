@@ -1,0 +1,52 @@
+.accordion_display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.accordion_size {
+    min-width: 150px;
+    max-width: 500px;
+    width: 100%;
+    padding: 50px 16px 0px;
+}
+
+mat-form-field {
+    margin-right: 12px;
+  }
+
+.spacer {
+    flex: 1 0 auto;
+}
+
+.mat-icon{
+    color: #ff7b00;
+    cursor: pointer;
+    padding-right: 15px;
+}
+
+.btDone {
+    background-color: #9af019;
+    color: #ffffff;
+}
+
+.btInProgress {
+        background-color: #fa2525;
+        color: #ffffff; 
+}
+
+.btToDo {
+    background-color: #d41bb5;
+    color: #ffffff; 
+}
+
+.text_center {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.image-center {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 450px;
+}

@@ -1,1 +1,86 @@
-<p>list-task works!</p>
+<div class="bg-component">
+  <div class="accordion_display">
+    <div accordion-size>
+      <div class="col-12 col-lg-12" *ngIf="errorMessage">
+        <div class="alert alert-danger alert-dissmisible" role="alert">
+          <div class="alert-message">
+            {{ errorMessage }}
+          </div>
+          <button
+            type="button"
+            class="close"
+            (click)="closeAlert()"
+            data-dismiss="alert"
+            aria-label="Close"
+          >
+            X
+          </button>
+        </div>
+      </div>
+
+      <mat-accordion multi="true" *ngIf="tasksData.length">
+        <mat-expansion-panel *ngFor="let task of tasksData" hideToggle="false">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <span class="text_center">{{ task.name }}</span>
+              <span class="spacer"></span>
+              <button
+                class="btToDo"
+                *ngIf="task.status == 'to-do'"
+                mat-raised-button
+              >
+                {{ task.status }}
+              </button>
+              <button
+                class="btInProgress"
+                *ngIf="task.status == 'in-progress'"
+                mat-raised-button
+              >
+                {{ task.status }}
+              </button>
+              <button
+                class="btDone"
+                *ngIf="task.status == 'done'"
+                mat-raised-button
+              >
+                {{ task.status }}
+              </button>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-panel-description>
+              {{ task.description }}
+          </mat-panel-description>
+          <mat-action-row>
+              <button
+                class="btToDo"
+                mat-button
+                (click)="updateTask(task, 'to-do')"  
+              >
+               to-do
+            </button>
+
+            <button
+                class="btInProgress"
+                mat-button
+                (click)="updateTask(task, 'in-progress')"  
+              >
+               in-progress
+            </button>
+
+            <button
+                class="btDone"
+                mat-button
+                (click)="updateTask(task, 'done')"  
+              >
+               done
+            </button>
+            <span class="spacer"></span>
+            <mat-icon color="primary" (click)="deleteTask(task)">
+                delete
+            </mat-icon>
+          </mat-action-row>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </div>
+</div>

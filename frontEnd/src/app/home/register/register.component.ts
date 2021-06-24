@@ -34,7 +34,7 @@ export class RegisterComponent implements OnInit {
       this.auth.registerUser(this.registerData).subscribe(
         (res: any) => {
           console.log(res);
-          localStorage.setItem('token', res.jwtToken);
+          //localStorage.setItem('token', res.jwtToken);
           this.registerData = {};
           this.router.navigate(['/saveTask'])
           /* this.succesMessage = 'Register User: successfull';
