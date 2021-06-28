@@ -21,6 +21,7 @@ app.use("/api/user/", User);
 app.use("/api/auth/", Auth);
 app.use("/api/board/", Board);
 app.use("/api/role/", Role)
+app.use("/uploads", express.static("uploads"))
 
 
 // escuchando el puerto y desplegando el servidor
